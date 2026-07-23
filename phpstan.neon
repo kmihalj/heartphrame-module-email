@@ -1,0 +1,13 @@
+
+parameters:
+	level: 10
+	paths:
+		- src
+		- views
+		- heartphrame-manifest.php
+	ignoreErrors:
+		-
+			identifier: property.protected
+			path: views
+	tmpDir: build/phpstan
+	treatPhpDocTypesAsCertain: false

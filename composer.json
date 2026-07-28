@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "aaieduhr/heartphrame-framework": "^0 || dev-main || dev-feature/orm-v2-foundation",
+        "aaieduhr/heartphrame-framework": ">=0.0.22 <1.0",
         "aaieduhr/heartphrame-module-auth": "^1.1",
         "aaieduhr/heartphrame-module-orm": "^1.1.2"
     },

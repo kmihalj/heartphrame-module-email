@@ -6,6 +6,25 @@ The E-mail module provides one application-wide, persistent SMTP delivery
 service. It is implemented in pure PHP and does not use Symfony Mailer,
 PHPMailer, or another mail transport package.
 
+## Dependencies
+
+Required, in enable order:
+
+1. `aaieduhr/heartphrame-framework` (`dev-main`)
+2. `aaieduhr/heartphrame-module-orm` (`dev-main`)
+3. `aaieduhr/heartphrame-module-auth` (`dev-main`)
+4. `aaieduhr/heartphrame-module-email` (`dev-main`)
+
+Notification is not required by E-mail. The optional integration works in the
+other direction: Notification uses this module to queue user-approved e-mail
+copies of in-app messages.
+
+```bash
+composer require aaieduhr/heartphrame-module-email:dev-main
+vendor/bin/hph email:install-migration
+vendor/bin/hph orm-migrate:up
+```
+
 Croatian documentation: [README_hr.md](README_hr.md)
 
 ## Features

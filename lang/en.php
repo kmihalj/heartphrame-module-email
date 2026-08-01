@@ -88,8 +88,8 @@ return [
     'Nije moguće kreirati direktorij migracija.' => 'The migration directory cannot be created.',
     'Nije moguće kopirati E-mail migraciju.' => 'The E-mail migration cannot be copied.',
     'Kreirana je početna E-mail migracija: ' => 'Created initial E-mail migration: ',
-    'Sljedeći korak: pokreni `vendor/bin/hph orm-migrate up`.' =>
-        'Next step: run `vendor/bin/hph orm-migrate up`.',
+    'Sljedeći korak: pokreni `vendor/bin/hph orm-migrate:up`.' =>
+        'Next step: run `vendor/bin/hph orm-migrate:up`.',
     'Obrađeno: %d, poslano: %d, neuspjelo: %d.' =>
         'Processed: %d, sent: %d, failed: %d.',
     'Nepoznata E-mail podnaredba: %s' => 'Unknown E-mail subcommand: %s',

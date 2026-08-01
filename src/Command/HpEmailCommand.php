@@ -105,7 +105,7 @@ final readonly class HpEmailCommand
         }
 
         $this->write(__('Kreirana je početna E-mail migracija: ') . $target);
-        $this->write(__('Sljedeći korak: pokreni `vendor/bin/hph orm-migrate up`.'));
+        $this->write(__('Sljedeći korak: pokreni `vendor/bin/hph orm-migrate:up`.'));
 
         return 0;
     }
@@ -169,7 +169,7 @@ final readonly class HpEmailCommand
     public function help(): int
     {
         $this->write('hph email <install|outbox:worker|outbox:status|help>');
-        $this->write('  vendor/bin/hph email install');
+        $this->write('  vendor/bin/hph email:install-migration');
         $this->write('  vendor/bin/hph email outbox:worker --batch-size=20');
         $this->write('  vendor/bin/hph email outbox:worker --watch --sleep=2');
         $this->write('  vendor/bin/hph email outbox:status');

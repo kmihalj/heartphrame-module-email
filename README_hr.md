@@ -6,6 +6,25 @@ E-mail modul daje cijeloj aplikaciji jedan trajni servis za SMTP slanje. Napisan
 je u čistom PHP-u i ne koristi Symfony Mailer, PHPMailer ni drugi paket za
 e-mail transport.
 
+## Ovisnosti
+
+Obavezno, redoslijedom uključivanja:
+
+1. `aaieduhr/heartphrame-framework` (`dev-main`)
+2. `aaieduhr/heartphrame-module-orm` (`dev-main`)
+3. `aaieduhr/heartphrame-module-auth` (`dev-main`)
+4. `aaieduhr/heartphrame-module-email` (`dev-main`)
+
+Notification nije obavezna ovisnost E-mail modula. Opcionalna integracija radi
+u suprotnom smjeru: Notification koristi ovaj modul za stavljanje korisnički
+odobrenih e-mail kopija obavijesti u red slanja.
+
+```bash
+composer require aaieduhr/heartphrame-module-email:dev-main
+vendor/bin/hph email:install-migration
+vendor/bin/hph orm-migrate:up
+```
+
 English documentation: [README.md](README.md)
 
 ## Mogućnosti

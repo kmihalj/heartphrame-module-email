@@ -1,5 +1,7 @@
 # HeartPhrame E-mail modul
 
+[English version](README.md)
+
 E-mail modul daje cijeloj aplikaciji jedan trajni servis za SMTP slanje. Napisan
 je u čistom PHP-u i ne koristi Symfony Mailer, PHPMailer ni drugi paket za
 e-mail transport.
@@ -9,6 +11,7 @@ English documentation: [README.md](README.md)
 ## Mogućnosti
 
 - administratorske postavke na `/settings/email`
+- nenametljivu registraciju u zajednički settings meni uz očuvanje ručno podešenog redoslijeda
 - SMTP host, port i `STARTTLS`, implicitni TLS ili nešifrirana veza
 - opcionalna `AUTH PLAIN` i `AUTH LOGIN` autentikacija korisničkim imenom i lozinkom
 - provjera TLS certifikata i izričita opcija za self-signed certifikat
@@ -69,3 +72,9 @@ Detaljne postavke, worker i dijagnostika opisani su u
 
 Modul je objavljen pod
 [European Union Public License (EUPL) v1.2](LICENSE).
+
+## Politika ovisnosti
+
+Framework i interni HeartPhrame moduli zahtijevaju se s pomične grane
+`dev-main`. Ovaj modul ne sprema `composer.lock`; CI dohvaća najnovija
+razvojna stanja i pokreće cijeli skup provjera `composer on-commit`.

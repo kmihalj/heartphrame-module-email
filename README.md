@@ -1,5 +1,7 @@
 # HeartPhrame E-mail Module
 
+[Hrvatska verzija](README_hr.md)
+
 The E-mail module provides one application-wide, persistent SMTP delivery
 service. It is implemented in pure PHP and does not use Symfony Mailer,
 PHPMailer, or another mail transport package.
@@ -9,6 +11,7 @@ Croatian documentation: [README_hr.md](README_hr.md)
 ## Features
 
 - administrator settings at `/settings/email`
+- non-invasive shared settings-menu registration that preserves manually configured ordering
 - SMTP host, port, and `STARTTLS`, implicit TLS, or unencrypted transport
 - optional `AUTH PLAIN` and `AUTH LOGIN` username/password authentication
 - TLS certificate verification and an explicit self-signed-certificate option
@@ -70,3 +73,9 @@ Detailed configuration, worker, and troubleshooting notes are in
 
 This work is published under the
 [European Union Public License (EUPL) v1.2](LICENSE).
+
+## Dependency policy
+
+The Framework and internal HeartPhrame modules are required from the moving
+`dev-main` branch. This module does not commit `composer.lock`; CI resolves
+the latest development heads and runs the complete `composer on-commit` suite.

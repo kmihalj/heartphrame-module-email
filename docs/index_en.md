@@ -15,6 +15,10 @@ across SQLite, PostgreSQL, and MySQL/MariaDB.
 
 Only an administrator can open `/settings/email`.
 
+When the Menu module is available, the E-mail module automatically adds the SMTP
+settings link. Re-registration refreshes its label and route without changing
+the position configured by the administrator in the menu editor.
+
 | Setting | Purpose |
 | --- | --- |
 | Enabled | Allows new messages to enter the outbox and workers to send them. |

@@ -14,6 +14,10 @@ SQLitea, PostgreSQL-a i MySQL-a/MariaDB-a.
 
 Samo administrator može otvoriti `/settings/email`.
 
+Ako je Menu modul dostupan, E-mail modul automatski dodaje poveznicu na SMTP
+postavke. Ponovna registracija osvježava naziv i rutu, ali ne mijenja položaj
+koji je administrator podesio u uređivaču menija.
+
 | Postavka | Namjena |
 | --- | --- |
 | Uključeno | Dopušta spremanje novih poruka i njihovo slanje workerom. |

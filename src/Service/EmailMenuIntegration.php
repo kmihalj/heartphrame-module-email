@@ -7,6 +7,8 @@ namespace AaiEduHr\HeartPhrameModuleEmail\Service;
 use Psr\Container\ContainerInterface;
 use Throwable;
 
+use function array_key_exists;
+use function array_replace;
 use function is_array;
 use function is_file;
 use function is_object;
@@ -53,29 +55,7 @@ final readonly class EmailMenuIntegration
             }
 
             $originalItems = $this->read($path);
-            $items = $this->withoutEmailItems($originalItems);
-            $items[] = [
-                'id' => 'email.settings.group',
-                'parent_id' => '',
-                'label' => ['hr' => 'E-mail', 'en' => 'E-mail'],
-                'route' => '',
-                'url' => '',
-                'query' => '',
-                'order' => 70,
-                'enabled' => true,
-                'level' => 0,
-                'children' => [[
-                    'id' => 'email.settings',
-                    'parent_id' => 'email.settings.group',
-                    'label' => ['hr' => 'SMTP postavke', 'en' => 'SMTP settings'],
-                    'route' => 'email.settings',
-                    'url' => '',
-                    'query' => '',
-                    'order' => 10,
-                    'enabled' => true,
-                    'level' => 1,
-                ]],
-            ];
+            $items = $this->settingsTreeWithEmailItem($originalItems);
             if ($items !== $originalItems) {
                 $this->write($path, $items);
             }
@@ -104,10 +84,125 @@ final readonly class EmailMenuIntegration
     }
 
     /**
-     * HR: Uklanja stare E-mail stavke na bilo kojoj dubini stabla kako bi ih
-     *     registracija mogla vratiti u ispravnu korijensku grupu.
-     * EN: Removes old E-mail items at any tree depth so registration can place
-     *     them back into the correct root group.
+     * HR: Dodaje E-mail grupu kada nedostaje, a postojeću osvježava na mjestu
+     *     kako bi redoslijed podešen u Menu modulu ostao sačuvan.
+     * EN: Adds the E-mail group when missing and refreshes an existing group in
+     *     place so ordering configured in the Menu module remains preserved.
+     *
+     * @param list<array<string, mixed>> $items
+     * @return list<array<string, mixed>>
+     */
+    private function settingsTreeWithEmailItem(array $items): array
+    {
+        foreach ($items as &$item) {
+            $id = is_string($item['id'] ?? null) ? $item['id'] : '';
+            if ($id !== 'email.settings.group') {
+                continue;
+            }
+
+            $item = $this->mergeManagedItem($item, $this->emailGroupDefinition());
+            $children = $this->rows($item['children'] ?? null);
+            $hasSettingsItem = false;
+
+            foreach ($children as &$child) {
+                $childId = is_string($child['id'] ?? null) ? $child['id'] : '';
+                if ($childId !== 'email.settings') {
+                    continue;
+                }
+
+                $child = $this->mergeManagedItem($child, $this->emailSettingsDefinition());
+                $hasSettingsItem = true;
+                break;
+            }
+
+            unset($child);
+
+            if (!$hasSettingsItem) {
+                $children = $this->withoutEmailItems($children);
+                $children[] = $this->emailSettingsDefinition();
+            }
+
+            $item['children'] = $children;
+            unset($item);
+
+            return $items;
+        }
+
+        unset($item);
+
+        $items = $this->withoutEmailItems($items);
+        $group = $this->emailGroupDefinition();
+        $group['children'] = [$this->emailSettingsDefinition()];
+        $items[] = $group;
+
+        return $items;
+    }
+
+    /**
+     * HR: Spaja modulom upravljana polja, ali čuva korisnički redoslijed.
+     * EN: Merges module-managed fields while preserving user-defined ordering.
+     *
+     * @param array<string, mixed> $existing
+     * @param array<string, mixed> $definition
+     * @return array<string, mixed>
+     */
+    private function mergeManagedItem(array $existing, array $definition): array
+    {
+        $merged = array_replace($existing, $definition);
+        if (array_key_exists('order', $existing)) {
+            $merged['order'] = $existing['order'];
+        }
+
+        return $merged;
+    }
+
+    /**
+     * HR: Vraća zadanu korijensku definiciju E-mail postavki.
+     * EN: Returns the default root definition for E-mail settings.
+     *
+     * @return array<string, mixed>
+     */
+    private function emailGroupDefinition(): array
+    {
+        return [
+            'id' => 'email.settings.group',
+            'parent_id' => '',
+            'label' => ['hr' => 'E-mail', 'en' => 'E-mail'],
+            'route' => '',
+            'url' => '',
+            'query' => '',
+            'order' => 70,
+            'enabled' => true,
+            'level' => 0,
+        ];
+    }
+
+    /**
+     * HR: Vraća zadanu definiciju poveznice na SMTP postavke.
+     * EN: Returns the default definition for the SMTP settings link.
+     *
+     * @return array<string, mixed>
+     */
+    private function emailSettingsDefinition(): array
+    {
+        return [
+            'id' => 'email.settings',
+            'parent_id' => 'email.settings.group',
+            'label' => ['hr' => 'SMTP postavke', 'en' => 'SMTP settings'],
+            'route' => 'email.settings',
+            'url' => '',
+            'query' => '',
+            'order' => 10,
+            'enabled' => true,
+            'level' => 1,
+        ];
+    }
+
+    /**
+     * HR: Uklanja stare E-mail stavke na bilo kojoj dubini prije popravka
+     *     nevaljanog stabla ili prvog dodavanja grupe.
+     * EN: Removes stale E-mail entries at any depth before repairing an invalid
+     *     tree or adding the group for the first time.
      *
      * @param list<array<string, mixed>> $items
      * @return list<array<string, mixed>>

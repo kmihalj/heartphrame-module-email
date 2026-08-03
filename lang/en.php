@@ -95,4 +95,5 @@ return [
     'Nepoznata E-mail podnaredba: %s' => 'Unknown E-mail subcommand: %s',
     'Naziv migracije ne smije biti prazan.' => 'The migration name cannot be empty.',
     'Postavke' => 'Settings',
+    'E-mail slanje nije uključeno.' => 'Email delivery is not enabled.',
 ];

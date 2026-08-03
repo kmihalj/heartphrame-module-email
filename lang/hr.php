@@ -93,4 +93,5 @@ return [
     'Nepoznata E-mail podnaredba: %s' => 'Nepoznata E-mail podnaredba: %s',
     'Naziv migracije ne smije biti prazan.' => 'Naziv migracije ne smije biti prazan.',
     'Postavke' => 'Postavke',
+    'E-mail slanje nije uključeno.' => 'E-mail slanje nije uključeno.',
 ];

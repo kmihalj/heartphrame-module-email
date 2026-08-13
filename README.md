@@ -87,6 +87,7 @@ the same logical message from being queued twice.
 
 Detailed configuration, worker, and troubleshooting notes are in
 [docs/index_en.md](docs/index_en.md).
+Backup integration is described in [docs/backup_en.md](docs/backup_en.md).
 
 ## Licence
 

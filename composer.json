@@ -24,6 +24,9 @@
         "aaieduhr/heartphrame-module-auth": "dev-main",
         "aaieduhr/heartphrame-module-orm": "dev-main"
     },
+    "suggest": {
+        "aaieduhr/heartphrame-module-backup": "Adds encrypted backup and restore for e-mail configuration; the transient outbox is excluded."
+    },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10 || ^11",

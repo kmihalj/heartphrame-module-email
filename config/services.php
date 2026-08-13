@@ -19,7 +19,7 @@ use HeartPhrame\Http\ResponseFactory;
 use HeartPhrame\Routing\UrlGenerator;
 use Psr\Container\ContainerInterface;
 
-return [
+$services = [
     EmailConfig::class => static fn(ContainerInterface $container): EmailConfig =>
         new EmailConfig($container->get(ConfigInterface::class), dirname(__DIR__)),
 
@@ -63,3 +63,32 @@ return [
             $container->get(AlertHandler::class),
         ),
 ];
+
+if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\StructuredConfigBackupProvider::class)) {
+    $services['heartphrame.backup.provider.email'] =
+        static fn(ContainerInterface $container): \AaiEduHr\HeartPhrameModuleBackup\Service\StructuredConfigBackupProvider =>
+            new \AaiEduHr\HeartPhrameModuleBackup\Service\StructuredConfigBackupProvider(
+                new \AaiEduHr\HeartPhrameModuleBackup\Value\BackupProviderMetadata(
+                    'email',
+                    \AaiEduHr\HeartPhrameModuleEmail\ModuleEmail::PACKAGE_NAME,
+                    1,
+                    ['hr' => 'Postavke e-pošte', 'en' => 'Email settings'],
+                    [],
+                    [\AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::SITE, \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::COMPONENT],
+                    true,
+                    true,
+                ),
+                $container->get(\AaiEduHr\HeartPhrameModuleBackup\Service\BackupFilesystem::class),
+                [[
+                    'key' => 'email-config',
+                    'path' => $container->get(ConfigInterface::class)->getAppRootDir() . '/config/email.php',
+                    'include_keys' => [
+                        'enabled', 'smtp', 'sender', 'application_base_url',
+                        'notifications_enabled', 'worker', 'menu',
+                    ],
+                    'sensitive' => true,
+                ]],
+            );
+}
+
+return $services;

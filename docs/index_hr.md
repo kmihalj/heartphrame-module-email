@@ -86,3 +86,6 @@ $email->queueForUser(
 
 Pozivatelj treba tretirati e-mail kao pomoćni kanal. Primarna poslovna radnja
 mora ostati uspješna i kada SMTP poslužitelj nije dostupan.
+
+Prijenosne postavke i izostavljeni redovi dostave opisani su u
+[integraciji backupa](backup_hr.md).

@@ -86,6 +86,7 @@ stavljanje iste logičke poruke u red.
 
 Detaljne postavke, worker i dijagnostika opisani su u
 [docs/index_hr.md](docs/index_hr.md).
+Integracija backupa opisana je u [docs/backup_hr.md](docs/backup_hr.md).
 
 ## Licenca
 

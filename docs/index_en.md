@@ -88,3 +88,6 @@ $email->queueForUser(
 
 Callers should treat e-mail as an auxiliary channel. The primary business
 operation must remain successful when the SMTP server is unavailable.
+
+Portable settings and excluded delivery queues are described in
+[Backup integration](backup_en.md).

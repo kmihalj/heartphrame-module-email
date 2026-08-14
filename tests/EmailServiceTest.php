@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AaiEduHr\HeartPhrameModuleEmail\Tests;
 
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
+use AaiEduHr\HeartPhrameModuleEmail\Event\EmailDeliveryChanged;
 use AaiEduHr\HeartPhrameModuleEmail\ModuleEmail;
 use AaiEduHr\HeartPhrameModuleEmail\Service\EmailConfig;
 use AaiEduHr\HeartPhrameModuleEmail\Service\EmailMessage;
@@ -32,6 +33,7 @@ use function unlink;
 use function var_export;
 
 #[CoversClass(EmailService::class)]
+#[UsesClass(EmailDeliveryChanged::class)]
 #[UsesClass(EmailConfig::class)]
 #[UsesClass(EmailMessage::class)]
 final class EmailServiceTest extends TestCase

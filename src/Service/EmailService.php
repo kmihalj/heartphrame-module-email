@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace AaiEduHr\HeartPhrameModuleEmail\Service;
 
 use AaiEduHr\HeartPhrameModuleAuth\Service\AuthUserService;
+use AaiEduHr\HeartPhrameModuleEmail\Event\EmailDeliveryChanged;
 use AaiEduHr\HeartPhrameModuleEmail\ModuleEmail;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 use function date;
@@ -37,6 +40,8 @@ final readonly class EmailService
         private Database $database,
         private EmailConfig $config,
         private AuthUserService $users,
+        private ?EventDispatcherInterface $events = null,
+        private ?LoggerInterface $logger = null,
     ) {
     }
 
@@ -156,7 +161,33 @@ final readonly class EmailService
             throw new RuntimeException(__('Spremljenu e-mail poruku nije moguće učitati.'));
         }
 
+        $this->dispatch(new EmailDeliveryChanged(
+            $this->stringValue($row['uuid'] ?? ''),
+            'queued',
+            $userId !== null && $userId > 0 ? $userId : null,
+            $message->recipientEmail,
+        ));
+
         return $row;
+    }
+
+    /** HR: Audit slušatelj ne smije prekinuti stavljanje poruke u outbox. EN: An audit listener must not interrupt outbox queuing. */
+    private function dispatch(EmailDeliveryChanged $event): void
+    {
+        if (!$this->events instanceof EventDispatcherInterface) {
+            return;
+        }
+
+        try {
+            $this->events->dispatch($event);
+        } catch (\Throwable $throwable) {
+            $this->logger?->error('Email business-event listener failed.', [
+                'module' => 'email',
+                'message_uuid' => $event->messageUuid,
+                'state' => $event->state,
+                'exception' => $throwable,
+            ]);
+        }
     }
 
     /**

@@ -18,6 +18,7 @@ use HeartPhrame\Config\ConfigInterface;
 use HeartPhrame\Http\ResponseFactory;
 use HeartPhrame\Routing\UrlGenerator;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 $services = [
     EmailConfig::class => static fn(ContainerInterface $container): EmailConfig =>
@@ -33,6 +34,8 @@ $services = [
             $container->get(Database::class),
             $container->get(EmailConfig::class),
             $container->get(AuthUserService::class),
+            $container->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
+            $container->get(LoggerInterface::class),
         ),
 
     EmailOutboxWorker::class => static fn(ContainerInterface $container): EmailOutboxWorker =>
@@ -40,6 +43,8 @@ $services = [
             $container->get(Database::class),
             $container->get(EmailConfig::class),
             $container->get(SmtpClient::class),
+            $container->get(LoggerInterface::class),
+            $container->get(\Psr\EventDispatcher\EventDispatcherInterface::class),
         ),
 
     EmailMenuIntegration::class => static fn(ContainerInterface $container): EmailMenuIntegration =>
@@ -77,6 +82,7 @@ if (class_exists(\AaiEduHr\HeartPhrameModuleBackup\Service\StructuredConfigBacku
                     [\AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::SITE, \AaiEduHr\HeartPhrameModuleBackup\Value\BackupScope::COMPONENT],
                     true,
                     true,
+                    componentGroups: [\AaiEduHr\HeartPhrameModuleBackup\Value\BackupComponentGroup::SETTINGS],
                 ),
                 $container->get(\AaiEduHr\HeartPhrameModuleBackup\Service\BackupFilesystem::class),
                 [[

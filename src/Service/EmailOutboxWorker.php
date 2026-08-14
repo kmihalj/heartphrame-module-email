@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace AaiEduHr\HeartPhrameModuleEmail\Service;
 
+use AaiEduHr\HeartPhrameModuleEmail\Event\EmailDeliveryChanged;
 use AaiEduHr\HeartPhrameModuleEmail\ModuleEmail;
 use AaiEduHr\HeartPhrameModuleOrm\Database\Database;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
 
@@ -36,6 +39,8 @@ final readonly class EmailOutboxWorker
         private Database $database,
         private EmailConfig $config,
         private SmtpClient $smtp,
+        private ?LoggerInterface $logger = null,
+        private ?EventDispatcherInterface $events = null,
     ) {
     }
 
@@ -192,6 +197,7 @@ final readonly class EmailOutboxWorker
                     'last_error' => null,
                     'updated_at' => $now,
                 ]);
+            $this->dispatch($row, 'sent', false);
 
             return true;
         } catch (Throwable $throwable) {
@@ -209,7 +215,51 @@ final readonly class EmailOutboxWorker
                     'updated_at' => $now,
                 ]);
 
+            $context = [
+                'module' => 'email',
+                'message_uuid' => $this->stringValue($row['uuid'] ?? ''),
+                'attempt' => $attempts,
+                'terminal' => $terminal,
+                'exception' => $throwable,
+            ];
+            if ($terminal) {
+                $this->logger?->error('Email delivery permanently failed.', $context);
+            } else {
+                $this->logger?->warning('Email delivery failed and was queued for retry.', $context);
+            }
+
+            $this->dispatch($row, $terminal ? 'failed' : 'retry_scheduled', $terminal);
+
             return false;
+        }
+    }
+
+    /**
+     * HR: Sigurno šalje promjenu stanja e-pošte audit listenerima.
+     * EN: Safely dispatches an e-mail state change to audit listeners.
+     *
+     * @param array<string,mixed> $row
+     */
+    private function dispatch(array $row, string $state, bool $terminal): void
+    {
+        if (!$this->events instanceof EventDispatcherInterface) {
+            return;
+        }
+
+        try {
+            $this->events->dispatch(new EmailDeliveryChanged(
+                $this->stringValue($row['uuid'] ?? ''),
+                $state,
+                $this->intValue($row['user_id'] ?? 0) > 0 ? $this->intValue($row['user_id']) : null,
+                $this->stringValue($row['recipient_email'] ?? ''),
+                $this->intValue($row['attempts'] ?? 0),
+                $terminal,
+            ));
+        } catch (Throwable $throwable) {
+            $this->logger?->error('Email business-event listener failed.', [
+                'module' => 'email', 'message_uuid' => $this->stringValue($row['uuid'] ?? ''),
+                'state' => $state, 'exception' => $throwable,
+            ]);
         }
     }
 
